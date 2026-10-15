@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>List your property · RentNest</title>
+<meta name="description" content="List your rental property on RentNest for free. Reach thousands of verified renters searching for homes in your area — no commission on your rent, ever.">
+<script>document.documentElement.className += " js";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23C05621'/%3E%3Cpath d='M25 52l25-22 25 22v25H25z' fill='none' stroke='white' stroke-width='8' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="RentNest home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M10 21v-6h4v6"/></svg>
+      </span>
+      <span><em>Rent</em>Nest</span>
+    </a>
+    <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="listings.html">Browse rentals</a>
+      <a href="index.html#how">How it works</a>
+      <a href="list-property.html" aria-current="page">List your property</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="listings.html">Browse rentals</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===================== PAGE HERO ===================== -->
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="index.html">Home</a><span>/</span><span aria-current="page">List your property</span>
+    </nav>
+    <h1 class="mt-6">List your rental property</h1>
+    <p>Free to post, always. Add your property once and let serious renters come to you — you keep every naira of the rent.</p>
+  </div>
+</section>
+
+<!-- ===================== FORM ===================== -->
+<section class="section">
+  <div class="container">
+
+    <div class="benefit-row reveal">
+      <div class="benefit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20"/><path d="M17 6.5c0-1.9-2.2-3-5-3s-5 1.1-5 3 2 2.6 5 3.2 5 1.3 5 3.3-2.2 3-5 3-5-1.1-5-3"/></svg>
+        <b>Zero commission</b>
+        <p>We never take a cut of your rent. Listing is free and stays free.</p>
+      </div>
+      <div class="benefit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+        <b>Reach serious renters</b>
+        <p>Every enquiry is someone actively searching — not a window shopper.</p>
+      </div>
+      <div class="benefit">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <b>You stay in control</b>
+        <p>Set the rent, deposit and move-in date. Approve every viewing yourself.</p>
+      </div>
+    </div>
+
+    <div class="form-card reveal" data-delay="1">
+      <form id="list-form" class="js-validate" data-validate-only novalidate
+            data-success-message="Your property has been submitted. Our team will review it within 24 hours.">
+
+        <!-- Section 1 -->
+        <div class="form-section">
+          <h2><span class="num" aria-hidden="true">1</span> The basics</h2>
+          <p class="help">Give renters the headline details that make them stop scrolling.</p>
+          <div class="form-grid two">
+            <div class="field">
+              <label for="lp-title">Listing title *</label>
+              <input type="text" id="lp-title" name="title" placeholder="e.g. Sunlit 3-Bedroom Apartment" required>
+              <span class="error-text">Please add a listing title.</span>
+            </div>
+            <div class="field">
+              <label for="lp-type">Property type *</label>
+              <select id="lp-type" name="type" required>
+                <option value="">Choose a type…</option>
+                <option value="Apartment">Apartment</option>
+                <option value="Duplex">Duplex</option>
+                <option value="Bungalow">Bungalow</option>
+                <option value="Studio">Studio</option>
+              </select>
+              <span class="error-text">Please choose a property type.</span>
+            </div>
+          </div>
+          <div class="form-grid two mt-6">
+            <div class="field">
+              <label for="lp-price">Rent per year (₦) *</label>
+              <input type="number" id="lp-price" name="price" placeholder="1500000" min="0" step="1000" required>
+              <span class="error-text">Please enter the annual rent.</span>
+            </div>
+            <div class="field">
+              <label for="lp-deposit">Deposit / terms</label>
+              <input type="text" id="lp-deposit" name="deposit" placeholder="e.g. 1 year rent + ₦200k caution fee">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2 -->
+        <div class="form-section">
+          <h2><span class="num" aria-hidden="true">2</span> Location &amp; size</h2>
+          <p class="help">Where is it, and how much space does it offer?</p>
+          <div class="form-grid two">
+            <div class="field">
+              <label for="lp-location">Address / area *</label>
+              <input type="text" id="lp-location" name="location" placeholder="e.g. GRA Phase 2, Port Harcourt" required>
+              <span class="error-text">Please add the property location.</span>
+            </div>
+            <div class="field">
+              <label for="lp-address2">Street (kept private)</label>
+              <input type="text" id="lp-address2" name="street" placeholder="House number and street" autocomplete="off">
+            </div>
+          </div>
+          <div class="three mt-6">
+            <div class="field">
+              <label for="lp-beds">Bedrooms *</label>
+              <select id="lp-beds" name="beds" required>
+                <option value="">Select…</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5+</option>
+              </select>
+              <span class="error-text">Please choose bedrooms.</span>
+            </div>
+            <div class="field">
+              <label for="lp-baths">Bathrooms *</label>
+              <select id="lp-baths" name="baths" required>
+                <option value="">Select…</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5+</option>
+              </select>
+              <span class="error-text">Please choose bathrooms.</span>
+            </div>
+            <div class="field">
+              <label for="lp-availability">Available from</label>
+              <input type="date" id="lp-availability" name="available">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3 -->
+        <div class="form-section">
+          <h2><span class="num" aria-hidden="true">3</span> Describe the home</h2>
+          <p class="help">Honest, specific descriptions get the best enquiries.</p>
+          <div class="field">
+            <label for="lp-description">Description *</label>
+            <textarea id="lp-description" name="description" rows="5" data-minlength="20" placeholder="Talk about the light, the layout, the neighbourhood, nearby schools and markets…" required></textarea>
+            <span class="error-text">Please add a short description (at least 20 characters).</span>
+          </div>
+          <fieldset style="border:0;padding:0;margin:var(--sp-5) 0 0">
+            <legend style="font-size:.8rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:10px">Amenities</legend>
+            <div class="amenity-grid">
+              <label class="amenity"><input type="checkbox" name="amenities" value="24/7 Security"> 24/7 Security</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Borehole Water"> Borehole Water</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Fitted Kitchen"> Fitted Kitchen</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Parking Space"> Parking Space</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Prepaid Meter"> Prepaid Meter</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Air Conditioning"> Air Conditioning</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Gated Compound"> Gated Compound</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Balcony"> Balcony</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="Private Garden"> Private Garden</label>
+              <label class="amenity"><input type="checkbox" name="amenities" value="CCTV"> CCTV</label>
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- Section 4 -->
+        <div class="form-section">
+          <h2><span class="num" aria-hidden="true">4</span> Photos &amp; your details</h2>
+          <p class="help">Listings with photos get up to 4× more viewing requests.</p>
+
+          <div class="uploader" id="photo-uploader">
+            <div class="upload-drop" id="upload-drop" role="button" tabindex="0" aria-label="Add property photos">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.2"/></svg>
+              <b>Drag &amp; drop photos here, or click to browse</b>
+              <small>JPG or PNG · up to 10 photos · each photo needs a room label</small>
+              <input type="file" id="photo-input" accept="image/*" multiple hidden>
+            </div>
+
+            <div class="upload-summary" id="upload-summary" hidden>
+              <div class="upload-summary-head">
+                <h3>Your photos <span class="upload-total" id="upload-total">0</span></h3>
+                <button class="btn btn-ghost btn-sm" type="button" id="upload-clear">Remove all</button>
+              </div>
+              <div class="room-tally" id="room-tally" aria-live="polite"></div>
+            </div>
+
+            <div class="photo-groups" id="photo-groups"></div>
+
+            <p class="upload-error" id="upload-error" role="alert" hidden></p>
+            <p class="upload-hint">Tip: label each picture with the room it shows — balcony photos stay under <b>Balcony</b>, bedroom photos under the bedrooms. Photos are grouped by room below.</p>
+          </div>
+
+          <div class="form-grid two mt-6">
+            <div class="field">
+              <label for="lp-name">Your name *</label>
+              <input type="text" id="lp-name" name="name" placeholder="Full name" required>
+              <span class="error-text">Please enter your name.</span>
+            </div>
+            <div class="field">
+              <label for="lp-phone">Phone *</label>
+              <input type="tel" id="lp-phone" name="phone" placeholder="0803 000 0000" required>
+              <span class="error-text">Please enter a valid phone number.</span>
+            </div>
+          </div>
+          <div class="field mt-6">
+            <label for="lp-email">Email *</label>
+            <input type="email" id="lp-email" name="email" placeholder="you@example.com" required>
+            <span class="error-text">Please enter a valid email address.</span>
+          </div>
+
+          <label class="checkbox-row mt-6">
+            <input type="checkbox" name="agree" required>
+            <span>I confirm I am the owner or an authorised representative of this property and that the details above are accurate.</span>
+          </label>
+        </div>
+
+        <div class="form-status" role="status" aria-live="polite"></div>
+
+        <div style="display:flex;align-items:center;gap:var(--sp-4);flex-wrap:wrap">
+          <button class="btn btn-primary" type="submit">Submit my listing</button>
+          <span class="form-note" style="margin:0">Takes about 3 minutes · Free forever</span>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===================== FAQ / TRUST ===================== -->
+<section class="section section--sand">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow">Good to know</span>
+      <h2>Common questions from landlords</h2>
+    </div>
+    <div class="steps">
+      <article class="step reveal">
+        <h3 style="font-size:1.1rem">How long does approval take?</h3>
+        <p>Most listings are reviewed and published within 24 hours. We check the address and details so renters can trust what they see.</p>
+      </article>
+      <article class="step reveal" data-delay="1">
+        <h3 style="font-size:1.1rem">Who sees my contact details?</h3>
+        <p>Only renters who send you a viewing request. Your street address stays private until you choose to share it.</p>
+      </article>
+      <article class="step reveal" data-delay="2">
+        <h3 style="font-size:1.1rem">Is it really free?</h3>
+        <p>Yes. Listing, editing and receiving enquiries are free. We don't take commission on your rent — now or later.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M10 21v-6h4v6"/></svg>
+          </span>
+          <span><em>Rent</em>Nest</span>
+        </a>
+        <p>Connecting renters with trusted landlords and property owners — directly, fairly and without the runaround.</p>
+      </div>
+      <div>
+        <h4>Renters</h4>
+        <ul>
+          <li><a href="listings.html">Browse rentals</a></li>
+          <li><a href="listings.html?beds=3">3+ bedroom homes</a></li>
+          <li><a href="index.html#how">How it works</a></li>
+          <li><a href="listings.html?maxPrice=1200000">Homes under ₦1.2m</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Landlords</h4>
+        <ul>
+          <li><a href="list-property.html">List a property</a></li>
+          <li><a href="index.html#how">Why RentNest</a></li>
+          <li><a href="list-property.html">Pricing (free)</a></li>
+          <li><a href="list-property.html">Landlord guide</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 RentNest. A demo rental marketplace — sample listings for illustration.</span>
+      <span>Made with care in Port Harcourt, Nigeria.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js?v=8"></script>
+<script src="app.js?v=8"></script>
+</body>
+</html>

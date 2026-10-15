@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Property details · RentNest</title>
+<meta name="description" content="Full details of a rental home on RentNest — photo gallery, description, amenities, location map and a direct booking form to contact the landlord.">
+<script>document.documentElement.className += " js";</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23C05621'/%3E%3Cpath d='M25 52l25-22 25 22v25H25z' fill='none' stroke='white' stroke-width='8' stroke-linejoin='round'/%3E%3C/svg%3E">
+</head>
+<body id="property-root">
+<a class="skip-link" href="#main">Skip to main content</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="RentNest home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M10 21v-6h4v6"/></svg>
+      </span>
+      <span><em>Rent</em>Nest</span>
+    </a>
+    <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
+      <a href="index.html">Home</a>
+      <a href="listings.html" aria-current="page">Browse rentals</a>
+      <a href="index.html#how">How it works</a>
+      <a href="list-property.html">List your property</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary btn-sm" href="listings.html">Back to results</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Toggle navigation menu"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+<div class="container">
+
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="index.html">Home</a><span>/</span>
+    <a href="listings.html">Browse rentals</a><span>/</span>
+    <span id="pd-crumb" aria-current="page">Property details</span>
+  </nav>
+
+  <!-- ===================== GALLERY ===================== -->
+  <section class="gallery mt-6" aria-label="Property photo gallery">
+    <div class="gallery-main">
+      <img id="pd-gallery" src="images/listing_3.png" alt="Property photo">
+      <span class="gallery-count" id="pd-count"></span>
+    </div>
+    <div class="gallery-thumbs" id="pd-thumbs"></div>
+  </section>
+
+  <!-- ===================== HEAD ===================== -->
+  <div class="detail-head">
+    <div>
+      <h1 id="pd-title">Loading property…</h1>
+      <p class="card-loc" style="font-size:1rem">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="pd-location">—</span>
+        <span aria-hidden="true">·</span>
+        <span class="rating" style="gap:5px">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="15" height="15" aria-hidden="true"><path d="M12 2l2.9 6.1 6.6.9-4.8 4.7 1.2 6.6L12 17.2 6.1 20.3l1.2-6.6L2.5 9l6.6-.9z"/></svg>
+          <span id="pd-rating">—</span> <small style="font-weight:600;color:var(--ink-faint)" id="pd-rating-count"></small>
+        </span>
+      </p>
+    </div>
+    <div class="detail-price">
+      <span id="pd-price">—</span>
+      <small id="pd-period">per year</small>
+    </div>
+  </div>
+
+  <!-- ===================== TWO-COLUMN LAYOUT ===================== -->
+  <div class="detail-layout">
+
+    <!-- ---------- LEFT: details ---------- -->
+    <div>
+      <div class="detail-specs">
+        <div class="detail-spec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18h18"/><path d="M7 10V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3"/></svg>
+          <b id="pd-beds">—</b><small>Bedrooms</small>
+        </div>
+        <div class="detail-spec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z"/><path d="M6 12V6a2 2 0 0 1 4 0"/><path d="M6 19l-1 2"/><path d="M18 19l1 2"/></svg>
+          <b id="pd-baths">—</b><small>Bathrooms</small>
+        </div>
+        <div class="detail-spec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/><path d="M3 9h18"/></svg>
+          <b><span id="pd-area">—</span> m²</b><small>Floor area</small>
+        </div>
+        <div class="detail-spec">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M10 21v-6h4v6"/></svg>
+          <b id="pd-type-spec">—</b><small>Property type</small>
+        </div>
+      </div>
+
+      <!-- ===================== INTERACTIVE FLOOR PLAN ===================== -->
+      <section class="block" id="room-map" aria-labelledby="room-map-title">
+        <h2 id="room-map-title">Explore the home, room by room</h2>
+        <p class="roommap-intro">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 3l7.5 17 2.6-6.9 6.9-2.6z"/></svg>
+          <span>Tap or click any room on the plan to see its photos — or pick a room from the list below.</span>
+        </p>
+        <div class="plan-frame" id="pd-plan">
+          <img class="plan-img" src="images/floorplan_apartment.png" alt="Floor plan of this home. Each room is a button — activate one to see its photos.">
+        </div>
+        <div class="room-chips" id="pd-room-chips" role="group" aria-label="Rooms in this home"></div>
+      </section>
+
+      <section class="block">
+        <h2>About this home</h2>
+        <p id="pd-desc">—</p>
+      </section>
+
+      <section class="block">
+        <h2>What this place offers</h2>
+        <ul class="amenity-grid" id="pd-amenities"></ul>
+      </section>
+
+      <section class="block">
+        <h2>Location</h2>
+        <div class="map-wrap">
+          <iframe id="pd-map" title="Property location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <div class="map-meta">
+            <div>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span id="pd-map-area">—</span>
+            </div>
+            <a class="btn btn-outline btn-sm" id="pd-map-link" href="#" target="_blank" rel="noopener noreferrer">Open in maps</a>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ---------- RIGHT: booking ---------- -->
+    <aside>
+      <div class="booking-card">
+        <h3>Contact the landlord</h3>
+        <p>Ask a question or request a viewing. Owners typically reply within a day.</p>
+
+        <div class="agent-row">
+          <span class="avatar" id="pd-agent-avatar" aria-hidden="true">RN</span>
+          <span>
+            <b id="pd-agent-name" style="display:block">—</b>
+            <small id="pd-agent-role" style="color:var(--ink-faint)">—</small>
+          </span>
+        </div>
+
+        <form class="js-validate" id="booking-form" novalidate
+              data-success-message="Thanks! Your viewing request has been sent. The landlord will confirm a time within 24 hours.">
+          <div class="form-grid">
+            <div class="field">
+              <label for="bk-name">Your name</label>
+              <input type="text" id="bk-name" name="name" placeholder="Full name" required>
+              <span class="error-text">Please enter your name.</span>
+            </div>
+            <div class="field">
+              <label for="bk-email">Email</label>
+              <input type="email" id="bk-email" name="email" placeholder="you@example.com" required>
+              <span class="error-text">Please enter a valid email address.</span>
+            </div>
+            <div class="field">
+              <label for="bk-phone">Phone</label>
+              <input type="tel" id="bk-phone" name="phone" placeholder="0803 000 0000" required>
+              <span class="error-text">Please enter a valid phone number.</span>
+            </div>
+            <div class="field">
+              <label for="bk-date">Preferred viewing date</label>
+              <input type="date" id="bk-date" name="date" required>
+              <span class="error-text">Please choose a date.</span>
+            </div>
+            <div class="field">
+              <label for="bk-ref">Property</label>
+              <input type="text" id="bk-ref" name="property" readonly>
+            </div>
+            <div class="field">
+              <label for="bk-message">Message</label>
+              <textarea id="bk-message" name="message" rows="3" placeholder="Hi, I'd like to arrange a viewing…"></textarea>
+            </div>
+            <label class="checkbox-row">
+              <input type="checkbox" name="consent" required>
+              <span>I agree to be contacted about this property and accept the RentNest terms.</span>
+            </label>
+          </div>
+
+          <div class="form-status" role="status" aria-live="polite"></div>
+          <p class="form-note">This is a demo site — no message is actually sent anywhere.</p>
+          <button class="btn btn-primary btn-block mt-6" type="submit">Request a viewing</button>
+        </form>
+      </div>
+    </aside>
+  </div>
+
+  <!-- ===================== SIMILAR ===================== -->
+  <section class="section section--tight">
+    <div class="section-head">
+      <span class="eyebrow">You might also like</span>
+      <h2>Similar homes nearby</h2>
+    </div>
+    <div class="property-grid" id="similar-grid"></div>
+  </section>
+
+</div>
+</main>
+
+<!-- ===================== LIGHTBOX ===================== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lightbox-close" type="button" data-lb-close aria-label="Close photo viewer">×</button>
+  <button class="lightbox-nav prev" type="button" aria-label="Previous photo">‹</button>
+  <img id="lightbox-img" src="images/listing_3.png" alt="Enlarged property photo">
+  <button class="lightbox-nav next" type="button" aria-label="Next photo">›</button>
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="index.html">
+          <span class="brand-mark" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5L12 3l9 7.5"/><path d="M5.5 9.5V21h13V9.5"/><path d="M10 21v-6h4v6"/></svg>
+          </span>
+          <span><em>Rent</em>Nest</span>
+        </a>
+        <p>Connecting renters with trusted landlords and property owners — directly, fairly and without the runaround.</p>
+      </div>
+      <div>
+        <h4>Renters</h4>
+        <ul>
+          <li><a href="listings.html">Browse rentals</a></li>
+          <li><a href="listings.html?beds=3">3+ bedroom homes</a></li>
+          <li><a href="index.html#how">How it works</a></li>
+          <li><a href="listings.html?maxPrice=1200000">Homes under ₦1.2m</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Landlords</h4>
+        <ul>
+          <li><a href="list-property.html">List a property</a></li>
+          <li><a href="index.html#how">Why RentNest</a></li>
+          <li><a href="list-property.html">Pricing (free)</a></li>
+          <li><a href="list-property.html">Landlord guide</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About us</a></li>
+          <li><a href="#">Contact</a></li>
+          <li><a href="#">Privacy</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 RentNest. A demo rental marketplace — sample listings for illustration.</span>
+      <span>Made with care in Port Harcourt, Nigeria.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="data.js?v=8"></script>
+<script src="app.js?v=8"></script>
+</body>
+</html>

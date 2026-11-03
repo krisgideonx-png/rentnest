@@ -96,20 +96,111 @@ Then visit <http://localhost:8000>.
 
 ---
 
+## Supabase Backend Setup
+
+RentNest connects to a free Supabase project for persistent listings and media storage.
+
+### 1. Environment Variables & Credentials
+
+Set your Supabase project URL and anon public key in `supabase-config.js` or via a global `window.ENV` object:
+
+```javascript
+window.ENV = {
+  SUPABASE_URL: "https://your-project-id.supabase.co",
+  SUPABASE_ANON_KEY: "your-anon-key"
+};
+```
+
+These values can be found in your Supabase dashboard under **Project Settings → API**.
+
+---
+
+### 2. Storage Bucket Permissions (`property-images`)
+
+1. In Supabase Dashboard, go to **Storage** and create a new bucket named:
+   ```
+   property-images
+   ```
+2. Set the bucket to **Public** so uploaded house images can be rendered publicly on tenant pages via public URLs.
+3. Add Storage policies (under **Storage → Policies** for `property-images`):
+   - **Allow Public Read Access (SELECT)**:
+     ```sql
+     CREATE POLICY "Public image access"
+     ON storage.objects FOR SELECT
+     TO public
+     USING (bucket_id = 'property-images');
+     ```
+   - **Allow Public / Anon Uploads (INSERT)**:
+     ```sql
+     CREATE POLICY "Allow anon uploads"
+     ON storage.objects FOR INSERT
+     TO anon
+     WITH CHECK (bucket_id = 'property-images');
+     ```
+
+---
+
+### 3. Database Table Schema (`properties`)
+
+Execute the following SQL in your Supabase project's **SQL Editor** to create the `properties` table:
+
+```sql
+CREATE TABLE IF NOT EXISTS public.properties (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
+  title TEXT NOT NULL,
+  location TEXT NOT NULL,
+  city TEXT,
+  price BIGINT NOT NULL,
+  period TEXT DEFAULT '/year',
+  beds INTEGER DEFAULT 1,
+  baths INTEGER DEFAULT 1,
+  type TEXT DEFAULT 'Apartment',
+  description TEXT,
+  deposit TEXT,
+  amenities TEXT[] DEFAULT '{}',
+  image_url TEXT,
+  gallery TEXT[] DEFAULT '{}',
+  room_photos JSONB DEFAULT '{}'::jsonb,
+  landlord_name TEXT,
+  landlord_phone TEXT,
+  landlord_email TEXT,
+  rating NUMERIC(2, 1) DEFAULT 4.7,
+  featured BOOLEAN DEFAULT false
+);
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE public.properties ENABLE ROW LEVEL SECURITY;
+
+-- Allow public read access (for tenant viewing)
+CREATE POLICY "Allow public read access on properties"
+ON public.properties FOR SELECT
+TO anon, authenticated
+USING (true);
+
+-- Allow landlords to insert listings
+CREATE POLICY "Allow anon property insertions"
+ON public.properties FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+```
+
+---
+
 ## Configuration
 
 - **Listings data** lives in `data.js` (`RENTALS`, room definitions and amenities). Edit, add or remove entries there and every page updates.
-- **Images** are referenced from `images/`. Replace any file — keeping the same name — to swap a photo.
+- **Supabase Integration** is configured in `supabase-config.js` and loaded across all pages.
+- **Images** are referenced from Supabase Storage public URLs (and fall back to local `images/`).
 - If you change `styles.css`, `app.js` or `data.js`, bump the `?v=` query string on its `<link>`/`<script>` tag in the HTML files to bust the cache.
 
 ---
 
 ## Notes & limitations
 
-- This is a **front-end demo**. Listings, prices, testimonials and rooms are realistic sample data.
-- The contact, viewing-booking and listing forms validate and give feedback, but they **do not post anywhere**. Landlord submissions are saved to `localStorage` on that device only.
-- Property photos are AI-generated placeholders.
-- To go live, wire the forms to a backend, move the data behind an API/database, and serve over HTTPS.
+- Listings submitted by landlords upload images directly to the `property-images` Supabase Storage bucket and write rows to the `properties` table.
+- If Supabase credentials are not provided or the network is offline, RentNest gracefully falls back to local storage and sample listings.
+- Property photos are AI-generated placeholders in demo sample data.
 
 ---
 

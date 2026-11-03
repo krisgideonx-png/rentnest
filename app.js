@@ -38,10 +38,205 @@
   var uploadedPhotos = [];
   var uploaderRender = null;
 
-  /* Built-in sample listings plus anything a landlord submitted in this browser. */
+  /* Supabase listings cached in memory once fetched */
+  var supabaseListingsCache = [];
+
+  function getSupabaseClient() {
+    if (window.RENTNEST_SUPABASE && typeof window.RENTNEST_SUPABASE.getClient === "function") {
+      return window.RENTNEST_SUPABASE.getClient();
+    }
+    return window.supabaseClient || null;
+  }
+
+  /* Built-in sample listings plus anything a landlord submitted locally or fetched from Supabase. */
   function allListings() {
     var base = window.RENTNEST_LISTINGS || [];
-    return window.RENTNEST_STORE ? window.RENTNEST_STORE.merge(base) : base.slice();
+    var combined = base.slice();
+    if (supabaseListingsCache.length) {
+      var ids = {};
+      supabaseListingsCache.forEach(function (s) { ids[s.id] = 1; });
+      combined = supabaseListingsCache.concat(combined.filter(function (b) { return !ids[b.id]; }));
+    }
+    return window.RENTNEST_STORE ? window.RENTNEST_STORE.merge(combined) : combined;
+  }
+
+  /* Normalize a row fetched from Supabase 'properties' table to standard RentNest listing format */
+  function normalizeSupabaseListing(row) {
+    if (!row) return null;
+    var gallery = [];
+    if (Array.isArray(row.gallery)) {
+      gallery = row.gallery.filter(Boolean);
+    } else if (typeof row.gallery === "string") {
+      try {
+        var parsed = JSON.parse(row.gallery);
+        if (Array.isArray(parsed)) gallery = parsed.filter(Boolean);
+      } catch (e) {
+        if (row.gallery.trim()) gallery = [row.gallery.trim()];
+      }
+    }
+
+    var primaryImg = row.image_url || row.image || (gallery.length ? gallery[0] : "images/listing_1.png");
+    if (primaryImg && gallery.indexOf(primaryImg) === -1) {
+      gallery.unshift(primaryImg);
+    }
+    if (!gallery.length) {
+      gallery = [primaryImg || "images/listing_1.png"];
+    }
+
+    var roomPhotos = {};
+    if (row.room_photos && typeof row.room_photos === "object" && !Array.isArray(row.room_photos)) {
+      roomPhotos = row.room_photos;
+    } else if (typeof row.room_photos === "string") {
+      try {
+        roomPhotos = JSON.parse(row.room_photos) || {};
+      } catch (e) {}
+    }
+
+    var rooms = Array.isArray(row.rooms)
+      ? row.rooms
+      : Object.keys(roomPhotos);
+    if (!rooms.length) {
+      rooms = ["living", "kitchen", "bed_master", "bath"];
+    }
+
+    var amenities = [];
+    if (Array.isArray(row.amenities)) {
+      amenities = row.amenities;
+    } else if (typeof row.amenities === "string") {
+      try {
+        var parsedAmen = JSON.parse(row.amenities);
+        if (Array.isArray(parsedAmen)) amenities = parsedAmen;
+        else amenities = row.amenities.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+      } catch (e) {
+        amenities = row.amenities.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+      }
+    }
+    if (!amenities.length) amenities = ["Borehole Water", "Gated Compound"];
+
+    var landlordName = row.landlord_name || row.agent_name || "Landlord";
+    var initials = landlordName.split(" ").map(function (w) { return w[0]; }).join("").substring(0, 2).toUpperCase() || "LL";
+
+    return {
+      id: String(row.id),
+      title: row.title || "Rental Property",
+      location: row.location || "Port Harcourt",
+      city: row.city || (row.location ? row.location.split(",").pop().trim() : "Port Harcourt"),
+      price: Number(row.price) || 0,
+      period: row.period || "/year",
+      beds: Number(row.beds) || 1,
+      baths: Number(row.baths) || 1,
+      type: row.type || "Apartment",
+      rating: Number(row.rating) || 4.7,
+      featured: Boolean(row.featured),
+      badge: row.badge ? (typeof row.badge === "object" ? row.badge : { text: String(row.badge), style: "clay" }) : { text: "Verified", style: "forest" },
+      desc: row.description || row.desc || "Verified home listed on RentNest.",
+      image: primaryImg,
+      amenities: amenities,
+      gallery: gallery,
+      roomPhotos: roomPhotos,
+      rooms: rooms,
+      coords: row.coords && typeof row.coords === "object" ? row.coords : { lat: 4.8156, lng: 7.0134 },
+      agent: {
+        name: landlordName,
+        initials: initials,
+        role: "Landlord · Verified owner",
+        phone: row.landlord_phone || "",
+        email: row.landlord_email || ""
+      }
+    };
+  }
+
+  /* Fetch listings asynchronously from Supabase 'properties' table */
+  async function fetchSupabaseListings() {
+    var sb = getSupabaseClient();
+    if (!sb || !sb.from) return [];
+    try {
+      var res = await sb.from("properties").select("*").order("created_at", { ascending: false });
+      if (res.error) {
+        // If created_at column doesn't exist, retry simple select
+        res = await sb.from("properties").select("*");
+      }
+      if (res.error) {
+        console.warn("[RentNest] Supabase select error:", res.error);
+        return [];
+      }
+      var rows = res.data || [];
+      var normalized = rows.map(normalizeSupabaseListing).filter(Boolean);
+      supabaseListingsCache = normalized;
+      return normalized;
+    } catch (err) {
+      console.warn("[RentNest] Could not fetch listings from Supabase:", err);
+      return [];
+    }
+  }
+
+  /* Helper to upload images to Supabase Storage bucket 'property-images' and get public URLs */
+  async function uploadPropertyImagesToSupabase(photos) {
+    var sb = getSupabaseClient();
+    if (!sb || !sb.storage) {
+      return photos.map(function (p) { return { room: p.room, url: p.src }; });
+    }
+
+    var bucketName = "property-images";
+    var results = [];
+
+    for (var i = 0; i < photos.length; i++) {
+      var p = photos[i];
+      var fileToUpload = p.file;
+
+      if (!fileToUpload && p.src && p.src.startsWith("data:")) {
+        // Fallback: convert data URL to Blob if raw File isn't present
+        try {
+          var arr = p.src.split(",");
+          var mime = arr[0].match(/:(.*?);/)[1];
+          var bstr = atob(arr[1]);
+          var n = bstr.length;
+          var u8arr = new Uint8Array(n);
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+          }
+          fileToUpload = new Blob([u8arr], { type: mime });
+        } catch (err) {
+          console.warn("Could not convert data URL to Blob:", err);
+        }
+      }
+
+      if (fileToUpload) {
+        var ext = (p.name && p.name.lastIndexOf(".") > -1)
+          ? p.name.substring(p.name.lastIndexOf(".") + 1).toLowerCase()
+          : "jpg";
+        var cleanExt = ext.replace(/[^a-z0-9]/g, "") || "jpg";
+        var fileName = Date.now() + "-" + Math.random().toString(36).substring(2, 8) + "-" + (i + 1) + "." + cleanExt;
+        var filePath = "properties/" + fileName;
+
+        var uploadRes = await sb.storage
+          .from(bucketName)
+          .upload(filePath, fileToUpload, {
+            cacheControl: "3600",
+            upsert: false
+          });
+
+        if (uploadRes.error) {
+          console.error("Supabase Storage upload error:", uploadRes.error);
+          throw new Error("Failed to upload image (" + (p.name || ("photo " + (i + 1))) + "): " + uploadRes.error.message);
+        }
+
+        var publicUrlData = sb.storage.from(bucketName).getPublicUrl(filePath);
+        var publicUrl = publicUrlData && publicUrlData.data ? publicUrlData.data.publicUrl : "";
+
+        results.push({
+          room: p.room,
+          url: publicUrl || p.src
+        });
+      } else {
+        results.push({
+          room: p.room,
+          url: p.src
+        });
+      }
+    }
+
+    return results;
   }
 
   /* ---------- Header: shadow on scroll + mobile nav ---------- */
@@ -641,6 +836,7 @@
     /* ---- drop hotspots + chips onto a floor-plan frame ---- */
     function attachPlan(frame, listing, chipSel, captionSel) {
       if (!frame || !listing) return;
+      $$(".room-hotspot", frame).forEach(function (b) { b.remove(); });
       keysFor(listing).forEach(function (k) {
         var r = ROOMS[k];
         var s = SPOTS[k];
@@ -896,7 +1092,7 @@
         hideError();
       }
       list.forEach(function (f) {
-        var item = { name: f.name, room: "", src: "" };
+        var item = { name: f.name, room: "", src: "", file: f };
         uploadedPhotos.push(item);
         readImage(f, function (src) { item.src = src; render(); });
       });
@@ -954,14 +1150,16 @@
     render();
   }
 
-  /* ---------- List-your-property page → add card client-side ---------- */
+  /* ---------- List-your-property page → add card client-side & Supabase ---------- */
   function initListProperty() {
     var form = $("#list-form");
     if (!form) return;
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       var status = $(".form-status", form);
+      var submitBtn = $("button[type='submit']", form);
+      var submitLabel = submitBtn ? submitBtn.textContent : "Submit my listing";
 
       /* Every uploaded photo must carry a room label before we accept the listing.
          This runs BEFORE the generic field gate so the message always shows. */
@@ -994,49 +1192,128 @@
       var baths = parseInt(form.elements.baths.value, 10) || 1;
       var type = form.elements.type.value || "Apartment";
       var desc = form.elements.description.value.trim();
+      var deposit = form.elements.deposit ? form.elements.deposit.value.trim() : "";
+      var landlordName = form.elements.name ? form.elements.name.value.trim() : "You";
+      var landlordPhone = form.elements.phone ? form.elements.phone.value.trim() : "";
+      var landlordEmail = form.elements.email ? form.elements.email.value.trim() : "";
+
       var amenities = $$("input[name='amenities']:checked", form).map(function (c) { return c.value; });
       if (!amenities.length) amenities = ["Borehole Water", "Gated Compound"];
 
-      /* group the labelled photos by room — this is what the floor-plan modal reads */
-      var roomPhotos = {};
-      var gallery = [];
-      uploadedPhotos.forEach(function (p) {
-        if (!p.src) return;
-        (roomPhotos[p.room] = roomPhotos[p.room] || []).push(p.src);
-        gallery.push(p.src);
-      });
-      var rooms = Object.keys(roomPhotos);
-
-      var listing = {
-        id: "submitted-" + Date.now(),
-        title: title, location: loc, city: loc.split(",").pop().trim(),
-        price: price, period: "/year", beds: beds, baths: baths, type: type,
-        rating: 4.6, featured: false,
-        badge: { text: "Just listed", style: "clay" },
-        desc: desc || "A newly submitted rental home — contact the landlord for more details.",
-        image: gallery[0] || "images/listing_1.png",
-        amenities: amenities,
-        gallery: gallery.length ? gallery : ["images/listing_1.png"],
-        roomPhotos: roomPhotos,
-        rooms: rooms,
-        coords: { lat: 4.8533, lng: 7.0633 },
-        agent: { name: "You", initials: "ME", role: "Landlord" }
-      };
-      if (window.RENTNEST_STORE) window.RENTNEST_STORE.add(listing);
-      else if (window.RENTNEST_LISTINGS) window.RENTNEST_LISTINGS.unshift(listing);
-
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Uploading images & submitting…";
+      }
       if (status) {
-        status.className = "form-status is-ok";
-        status.innerHTML = "🎉 Your listing <b>" + esc(title) + "</b> has been submitted for review with " +
-          gallery.length + (gallery.length === 1 ? " photo" : " photos") + " across " + rooms.length +
-          (rooms.length === 1 ? " room" : " rooms") + ". " +
-          '<a href="property.html?id=' + encodeURIComponent(listing.id) + '" style="text-decoration:underline;font-weight:800">See how it looks →</a>';
+        status.className = "form-status";
+        status.textContent = "Uploading images to Supabase Storage…";
       }
 
-      uploadedPhotos.length = 0;
-      if (window.RENTNEST_UPLOADER) window.RENTNEST_UPLOADER.render();
-      form.reset();
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
+      try {
+        var uploadedResults = await uploadPropertyImagesToSupabase(uploadedPhotos);
+
+        /* group the labelled photos by room */
+        var roomPhotos = {};
+        var gallery = [];
+        uploadedResults.forEach(function (p) {
+          if (!p.url) return;
+          (roomPhotos[p.room] = roomPhotos[p.room] || []).push(p.url);
+          gallery.push(p.url);
+        });
+        var rooms = Object.keys(roomPhotos);
+        var primaryImage = gallery[0] || "images/listing_1.png";
+
+        var sb = getSupabaseClient();
+        var listingId = "submitted-" + Date.now();
+
+        if (sb && sb.from) {
+          if (status) {
+            status.textContent = "Saving listing to database…";
+          }
+          // Insert row into Supabase 'properties' table
+          var rowData = {
+            title: title,
+            location: loc,
+            city: loc.split(",").pop().trim(),
+            price: price,
+            period: "/year",
+            beds: beds,
+            baths: baths,
+            type: type,
+            description: desc,
+            deposit: deposit,
+            amenities: amenities,
+            image_url: primaryImage, // image URL string
+            gallery: gallery,
+            room_photos: roomPhotos,
+            landlord_name: landlordName,
+            landlord_phone: landlordPhone,
+            landlord_email: landlordEmail
+          };
+
+          var insertRes = await sb.from("properties").insert([rowData]).select();
+          if (insertRes.error) {
+            console.error("Supabase DB insert error:", insertRes.error);
+            // If the table columns vary or table insert fails, log but allow local fallback
+            if (status) {
+              status.className = "form-status is-error";
+              status.textContent = "Database insert error: " + insertRes.error.message;
+            }
+          } else if (insertRes.data && insertRes.data[0] && insertRes.data[0].id) {
+            listingId = String(insertRes.data[0].id);
+          }
+        }
+
+        var listing = {
+          id: listingId,
+          title: title,
+          location: loc,
+          city: loc.split(",").pop().trim(),
+          price: price,
+          period: "/year",
+          beds: beds,
+          baths: baths,
+          type: type,
+          rating: 4.6,
+          featured: false,
+          badge: { text: "Just listed", style: "clay" },
+          desc: desc || "A newly submitted rental home — contact the landlord for more details.",
+          image: primaryImage,
+          amenities: amenities,
+          gallery: gallery.length ? gallery : ["images/listing_1.png"],
+          roomPhotos: roomPhotos,
+          rooms: rooms,
+          coords: { lat: 4.8533, lng: 7.0633 },
+          agent: { name: landlordName || "You", initials: (landlordName || "ME").substring(0, 2).toUpperCase(), role: "Landlord" }
+        };
+
+        if (window.RENTNEST_STORE) window.RENTNEST_STORE.add(listing);
+        else if (window.RENTNEST_LISTINGS) window.RENTNEST_LISTINGS.unshift(listing);
+
+        if (status) {
+          status.className = "form-status is-ok";
+          status.innerHTML = "🎉 Your listing <b>" + esc(title) + "</b> has been submitted successfully with " +
+            gallery.length + (gallery.length === 1 ? " photo" : " photos") + " across " + rooms.length +
+            (rooms.length === 1 ? " room" : " rooms") + ". " +
+            '<a href="property.html?id=' + encodeURIComponent(listing.id) + '" style="text-decoration:underline;font-weight:800">See how it looks →</a>';
+        }
+
+        uploadedPhotos.length = 0;
+        if (window.RENTNEST_UPLOADER) window.RENTNEST_UPLOADER.render();
+        form.reset();
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (err) {
+        console.error("Listing submission failed:", err);
+        if (status) {
+          status.className = "form-status is-error";
+          status.textContent = "Failed to submit listing: " + (err.message || err);
+        }
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = submitLabel;
+        }
+      }
     });
   }
 
@@ -1052,6 +1329,23 @@
     initListProperty();
     initRoomExplorer();
     initReveal();
+
+    // Asynchronously fetch properties from Supabase and refresh views
+    var sb = getSupabaseClient();
+    if (sb) {
+      fetchSupabaseListings().then(function (fetched) {
+        if (fetched && fetched.length) {
+          // Re-render views with Supabase properties
+          initFeatured();
+          initListings();
+          initDetail();
+          initRoomExplorer();
+          initReveal();
+        }
+      }).catch(function (e) {
+        console.warn("[RentNest] Error fetching Supabase listings on boot:", e);
+      });
+    }
   }
 
   if (document.readyState === "loading") {

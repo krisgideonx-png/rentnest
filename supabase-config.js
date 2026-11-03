@@ -7,8 +7,8 @@
   // Provide configuration via window.ENV or global definitions
   var ENV = window.ENV || {};
 
-  var SUPABASE_URL = ENV.SUPABASE_URL || window.SUPABASE_URL || "";
-  var SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || "";
+  var SUPABASE_URL = ENV.SUPABASE_URL || window.SUPABASE_URL || "https://lryayhjaiekphjisjnwg.supabase.co";
+  var SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY || window.SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxyeWF5aGphaWVrcGhqaXNqbndnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2ODUzNzUsImV4cCI6MjEwOTI2MTM3NX0.LmEqKSqvK79yogrxt9O3ENrwSO8wnGlOk1Hok94Tx2A";
 
   var client = null;
 
